@@ -21,11 +21,13 @@ protected:
     }
 
     void Import(ifstream& in) {
-        in >> model >> memorySize;
+        getline(in, model, ',');
+        model.erase(0, model.find_first_not_of(" \n\r\t"));
+        in >> memorySize;
     }
 
     void Export(ofstream& out) const {
-        out << model << " " << memorySize << endl;
+        out << model << "," << memorySize << endl;
     }
 };
 
@@ -46,11 +48,15 @@ protected:
     }
 
     void Import(ifstream& in) {
-    
+        getline(in, model, ',');
+        model.erase(0, model.find_first_not_of(" \n\r\t"));
+        in >> cores;
+        in.ignore();
+        in >> frequency;
     }
 
     void Export(ofstream& out) const {
-        
+        out << model << "," << cores << "," << frequency << endl;
     }
 };
 
@@ -69,11 +75,13 @@ protected:
     }
 
     void Import(ifstream& in) {
-        
+        in >> size;
+        in.ignore();
+        in >> speed;
     }
 
     void Export(ofstream& out) const {
-        
+        out << size << "," << speed << endl;
     }
 };
 
@@ -92,11 +100,13 @@ protected:
     }
 
     void Import(ifstream& in) {
-        
+        getline(in, type, ',');
+        type.erase(0, type.find_first_not_of(" \n\r\t"));
+        in >> speed;
     }
 
     void Export(ofstream& out) const {
-        
+        out << type << "," << speed << endl;
     }
 };
 
@@ -152,7 +162,7 @@ public:
     void Print() const {
         cout << "=== Cluster ===" << endl;
         for (size_t i = 0; i < nodes.size(); ++i) {
-            cout << "Node " << i + 1 << ":" << endl;
+            cout << "\n\tNode " << i + 1 << ":" << endl;
             nodes[i].Print();
         }
     }
@@ -199,12 +209,17 @@ public:
 
 int main() {
     ClusterNode node1 (
-        "NVIDIA RTX 4090", 24576, "Intel i9-14900K", 8, 3.5, 
-        64, 3200, "Ethernet", 1000
+        "NVIDIA RTX 4090", 24'576, "Intel i9-14900K", 8, 3.5, 
+        64, 3'200, "Ethernet", 1'000
+    );
+    ClusterNode node2 (
+        "NVIDIA  H100", 496'000, "AMD Ryzen 9 8900X", 16, 5.5, 
+        128, 5'600, "Ethernet", 10'000
     );
 
     Cluster cluster1;
     cluster1.AddNode(node1);
+    cluster1.AddNode(node2);
     cluster1.Print();
     cluster1.Export("cluster_data.txt");
     
