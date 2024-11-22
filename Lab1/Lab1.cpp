@@ -21,11 +21,11 @@ protected:
     }
 
     void Import(ifstream& in) {
-        
+        in >> model >> memorySize;
     }
 
     void Export(ofstream& out) const {
-        
+        out << model << " " << memorySize << endl;
     }
 };
 
@@ -109,6 +109,9 @@ class ClusterNode {
     friend class Cluster;
 
 public:
+    ClusterNode()
+    : gpu("", 0), cpu("", 0, 0.0), ram(0, 0), lan("", 0) {}
+
     ClusterNode(const string& gpuModel, int gpuMemorySize, const string& cpuModel, int cpuCores, float cpuFrequency, int ramSize, int ramSpeed, const string& lanType, int lanSpeed)
         : gpu(gpuModel, gpuMemorySize), cpu(cpuModel, cpuCores, cpuFrequency), ram(ramSize, ramSpeed), lan(lanType, lanSpeed) {}
 
@@ -155,11 +158,41 @@ public:
     }
 
     void Import(const string& filename) {
-        return;
+        ifstream inputFile(filename);
+        if (!inputFile.is_open()) {
+            cerr << "Error opening " << filename << " for reading" << endl;
+            return;
+        }
+
+        size_t nodeCount;
+        inputFile >> nodeCount;
+
+        nodes.clear();
+        nodes.reserve(nodeCount);
+        for (size_t i = 0; i < nodeCount; ++i) {
+            ClusterNode node;
+            node.Import(inputFile);
+            nodes.push_back(node);
+        }
+
+        inputFile.close();
+        cout << "\nCluster data imported from " << filename << endl;
     }
 
     void Export(const string& filename) const {
-        return;
+        ofstream outputFile(filename);
+        if (!outputFile.is_open()) {
+            cerr << "Error opening " << filename << " for writing" << endl;
+            return;
+        }
+
+        outputFile << nodes.size() << endl;
+        for (const auto& node : nodes) {
+            node.Export(outputFile);
+        }
+
+        outputFile.close();
+        cout << "\nCluster data exported to " << filename << endl;
     }
 };
 
@@ -173,5 +206,10 @@ int main() {
     Cluster cluster1;
     cluster1.AddNode(node1);
     cluster1.Print();
+    cluster1.Export("cluster_data.txt");
+    
+    Cluster importedCluster;
+    importedCluster.Import("cluster_data.txt");
+    importedCluster.Print();
     return 0;
 }
