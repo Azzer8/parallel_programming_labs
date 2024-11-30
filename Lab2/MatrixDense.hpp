@@ -21,6 +21,12 @@ class  MatrixDense {
         _data = new T[_row*_col];
 	}
 
+	MatrixDense(size_t row_col) {
+        _row = row_col;
+        _col = row_col;
+        _data = new T[_row*_col];
+	}
+
     ~MatrixDense() { delete[] _data; }
 
     string getClassName() const {
@@ -193,4 +199,8 @@ class  MatrixDense {
 
         return impMatrixDense;
     }
+
+	pair<size_t, size_t> get_row_col() const {
+		return pair(_row, _col);
+	}
 };
