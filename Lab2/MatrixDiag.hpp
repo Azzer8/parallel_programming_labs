@@ -1,31 +1,5 @@
-// #include <iostream>
-// #include <fstream>
-// #include <string>
-// #include <cstdlib>
-// #include <ctime>
-// #include <cmath>
-// #include <iomanip>
-// #include <stdexcept>
-
-// template<typename T = double>
-// class  MatrixDiag {
-//     size_t _row, _col;
-//     T* _data;
-
-//  public:
-// 	MatrixDiag(size_t row, size_t col) {
-// 		if (row != col) throw invalid_argument("Количество строк и столбцов должны быть равны.");
-//         _row = row; _col = col;
-//         _data = new T[_row * _col];
-// 	}
-
-
-
-// };
-
-#include <iostream>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include "MatrixDense.hpp"
 
 using namespace std;
@@ -33,7 +7,7 @@ using namespace std;
 
 template<typename T = double>
 class MatrixDiag {
-    map<int, vector<T>> diagonals;
+    vector<T> diagonalElements;
  public:
     MatrixDiag(const MatrixDense<T>& matrix) {
         size_t _row = matrix.get_row_col().first;

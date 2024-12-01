@@ -1,10 +1,10 @@
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string>
 #include <cstdlib>
 #include <ctime>
 #include <cmath>
-#include <iomanip>
 #include <stdexcept>
 
 using namespace std;
