@@ -50,12 +50,37 @@ int main() {
 
 
     // ДЕМОНСТРАЦИЯ РАБОТЫ MatrixDiag
-        MatrixDense<int> matrixDense3(5);
-        matrixDense3.fillMatrix(0, 2);
+        MatrixDense<int> matrixDense3 = MatrixDense<int>::importFromFile("MatrixDense3.txt");
         cout << "MatrixDense 3: " << endl;
         matrixDense3.print();
         MatrixDiag diagMatrix(matrixDense3);
-        diagMatrix.printDiagonals();
+        diagMatrix.print();
+
+        cout << "Главная" << endl;
+        cout << matrixDense3(0, 0) << " = " << diagMatrix(0, 0) << endl;
+        cout << matrixDense3(1, 1) << " = " << diagMatrix(1, 1) << endl;
+        cout << matrixDense3(2, 2) << " = " << diagMatrix(2, 2) << endl;
+        // cout << matrixDense3(3, 3) << " = " << diagMatrix(3, 3) << endl;
+        
+        cout << "\nНижняя 1" << endl;
+        cout << matrixDense3(1, 0) << " = " << diagMatrix(1, 0) << endl;
+        cout << matrixDense3(2, 1) << " = " << diagMatrix(2, 1) << endl;
+        // cout << matrixDense3(3, 2) << " = " << diagMatrix(3, 2) << endl;
+        cout << "Нижняя 2" << endl;
+        cout << matrixDense3(2, 0) << " = " << diagMatrix(2, 0) << endl;
+        // cout << matrixDense3(3, 1) << " = " << diagMatrix(3, 1) << endl;
+        // cout << "Нижняя 3" << endl;
+        // cout << matrixDense3(3, 2) << " = " << diagMatrix(3, 2) << endl;
+        
+        cout << "\nВерхняя 1" << endl;
+        cout << matrixDense3(0, 1) << " = " << diagMatrix(0, 1) << endl;
+        cout << matrixDense3(1, 2) << " = " << diagMatrix(1, 2) << endl;
+        // cout << matrixDense3(2, 3) << " = " << diagMatrix(2, 3) << endl;
+        cout << "Верхняя 2" << endl;
+        cout << matrixDense3(0, 2) << " = " << diagMatrix(0, 2) << endl;
+        // cout << matrixDense3(1, 3) << " = " << diagMatrix(1, 3) << endl;
+        // cout << "Верхняя 3" << endl;
+        // cout << matrixDense3(0, 3) << " = " << diagMatrix(0, 3) << endl;
 
     return 0;
 }
