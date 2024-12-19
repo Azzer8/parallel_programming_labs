@@ -51,13 +51,18 @@ int main() {
 
     // ДЕМОНСТРАЦИЯ РАБОТЫ MatrixDiag
         MatrixDense<int> matrixDense3 = MatrixDense<int>::importFromFile("MatrixDense3.txt");
-        // MatrixDense<int> matrixDense3(10, 10);
-        // matrixDense3.fillMatrix(0, 9);
-        cout << "MatrixDense 3: " << endl;
-        matrixDense3.print();
-        MatrixDiag matrixDiag(matrixDense3);
-        matrixDiag.print();
-        
+        MatrixDense<int> matrixDense4 = MatrixDense<int>::importFromFile("MatrixDense4.txt");
+        MatrixDiag matrixDiag1(matrixDense3);
+        cout << "MatrixDiag 1: " << endl;
+        matrixDiag1.print();
+        cout << "MatrixDiag 2: " << endl;
+        MatrixDiag matrixDiag2(matrixDense4);
+        matrixDiag2.print();
+
+        cout << "Сумма MatrixDiag 1 и MatrixDiag 2: " << endl;
+        MatrixDiag<int> sumMatrixDiag = matrixDiag1 + matrixDiag2;
+        sumMatrixDiag.print();
+
 
     return 0;
 }

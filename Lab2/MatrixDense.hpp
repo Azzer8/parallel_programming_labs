@@ -18,13 +18,13 @@ class  MatrixDense {
     MatrixDense(size_t row, size_t col) {
         _row = row;
         _col = col;
-        _data = new T[_row*_col];
+        _data = new T[_row * _col];
 	}
 
 	MatrixDense(size_t row_col) {
         _row = row_col;
         _col = row_col;
-        _data = new T[_row*_col];
+        _data = new T[_row * _col];
 	}
 
     ~MatrixDense() { delete[] _data; }
@@ -35,7 +35,7 @@ class  MatrixDense {
 
     T& operator()(size_t i, size_t j) const {
         if (i >= _row || j >= _col) {
-            throw runtime_error("Ошибка! Индексы выходят за границы матрицы.");
+            throw out_of_range("Ошибка! Индексы выходят за границы матрицы.");
         }
 
         return _data[i*_col + j];
@@ -172,7 +172,7 @@ class  MatrixDense {
             outFile << endl;
         }
         outFile.close();
-        cout << "Экспорт в " << fileName << " выполнен." << endl;
+        cout << "Экспорт в " << fileName << " выполнен." << endl << endl;
     }
 
     static MatrixDense importFromFile(const string& fileName) {
@@ -195,7 +195,7 @@ class  MatrixDense {
             }
         }
         inFile.close();
-        cout << "Импорт из " << fileName << " выполнен." << endl;
+        cout << "Импорт из " << fileName << " выполнен." << endl << endl;
 
         return impMatrixDense;
     }

@@ -6,9 +6,14 @@ using namespace std;
 
 template<typename T = double>
 class MatrixDiag {
-    vector<int> _diagonals_idxs;
-    vector<T> _data;
     size_t _row, _col;
+    vector<long long int> _diagonals_idxs;
+    vector<T> _data;
+    MatrixDiag(size_t size) {
+        _row = size, _col = size;
+
+    }
+    
  public:
     MatrixDiag(const MatrixDense<T>& matrix) {
         _row = matrix.get_row_col().first;
@@ -68,13 +73,13 @@ class MatrixDiag {
         }
 
         int reqstd_diag = int(col - row);
-        size_t idx_of_rd;
+        size_t rd_idx;
         bool found = false;
 
         for (size_t i = 0; i < _diagonals_idxs.size(); ++i) {
             if (_diagonals_idxs[i] == reqstd_diag) {
                 found = true;
-                idx_of_rd = i;
+                rd_idx = i;
                 break;
             }
         }
@@ -82,7 +87,7 @@ class MatrixDiag {
         if (found) {
             size_t data_index = 0;
             if (reqstd_diag != 0) {
-                for (size_t i = 0; i < idx_of_rd; ++i) {
+                for (size_t i = 0; i < rd_idx; ++i) {
                         // Добавляем количество элементов на каждой предыдущей диагонали
                         data_index += _row - abs(_diagonals_idxs[i]);
                     }
@@ -97,13 +102,38 @@ class MatrixDiag {
         return T(0);
     }
 
+    MatrixDiag operator+(const MatrixDiag& other) {
+        if (_row != other._row || _col != other._col) {
+            throw runtime_error("Ошибка! Матрицы имеют разный размер.");
+        }
+
+        MatrixDense<T> result(_row, _col);
+        for (size_t i = 0; i < _row; ++i) {
+            for (size_t j = 0; j < _col; ++j) {
+                result(i, j) = (*this)(i, j) + other(i, j);
+            }
+        }
+        MatrixDiag matrixDiagSum(result);
+
+
+        return matrixDiagSum;
+    }
+
     void print() const {
+        // for (size_t i = 0; i < _row; ++i) {
+        //     for (size_t j = 0; j < _col; ++j) {
+        //         cout << (*this)(i, j) << " ";
+        //     }
+        //     cout << endl;
+        // }
+        // cout << endl;
+
         cout << "Массив индексов ненулевых диагоналей: ";
         for (const auto& value : _diagonals_idxs) {
             cout << value << " ";
         }
         cout << endl;
-        cout << "MatrixDense: ";
+        cout << "Массив ненулевых диагоналей: ";
         for (const auto& value : _data) {
             cout << value << " ";
         }

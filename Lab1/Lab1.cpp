@@ -8,7 +8,7 @@ using namespace std;
 
 class GpuSpec {
     string model;
-    int memorySize;
+    int memorySize; // MB
     friend class ClusterNode;
 
 public:
@@ -122,9 +122,12 @@ public:
     ClusterNode()
     : gpu("", 0), cpu("", 0, 0.0), ram(0, 0), lan("", 0) {}
 
-    ClusterNode(const string& gpuModel, int gpuMemorySize, const string& cpuModel, int cpuCores, float cpuFrequency, int ramSize, int ramSpeed, const string& lanType, int lanSpeed)
-        : gpu(gpuModel, gpuMemorySize), cpu(cpuModel, cpuCores, cpuFrequency), ram(ramSize, ramSpeed), lan(lanType, lanSpeed) {}
-
+    ClusterNode(const string& gpuModel, int gpuMemorySize, 
+                    const string& cpuModel, int cpuCores, float cpuFrequency, 
+                    int ramSize, int ramSpeed, 
+                    const string& lanType, int lanSpeed)
+        : gpu(gpuModel, gpuMemorySize), cpu(cpuModel, cpuCores, cpuFrequency), 
+        ram(ramSize, ramSpeed), lan(lanType, lanSpeed) {}
 
 protected:
     void Print() const {
