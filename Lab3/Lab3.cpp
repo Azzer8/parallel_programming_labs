@@ -30,8 +30,7 @@ struct StructResult {
                 << "; time: " << _time << "]" << endl;
     }
     
-    static bool compare(const StructResult<T>& left, const StructResult<T>& right) 
-    { 
+    static bool compare(const StructResult<T>& left, const StructResult<T>& right) const { 
         return left._time < right._time; 
     }
 };
@@ -63,6 +62,80 @@ public:
         }
         _isInit = true;
     }
+
+    T minEl(size_t startIdx, size_t endIdx) const {
+        if (_isInit) {
+            if (endIdx < _size && endIdx > startIdx) {
+                T min_el = _data[startIdx];
+                for (size_t i = startIdx + 1; i <= endIdx; ++i)
+                {
+                    if (min_el > _data[i]) {
+                        min_el = _data[i];
+                    }
+                }
+
+                return min_el;
+            }
+            else { throw logic_error("Выход за пределы массива!"); }
+        } else { throw logic_error("Вектор не инициализирован!"); }
+    }
+    T minEl(size_t endIdx) const { return minEl(0, endIdx); }
+    T minEl() const { return minEl(0, _size - 1); }
+
+    T maxEl(size_t startIdx, size_t endIdx) const {
+        if (_isInit) {
+            if (endIdx < _size && endIdx > startIdx) {
+                T max_el = _data[startIdx];
+                for (size_t i = startIdx + 1; i <= endIdx; ++i)
+                {
+                    if (max_el < _data[i]) {
+                        max_el = _data[i];
+                    }
+                }
+
+                return max_el;
+            }
+            else { throw logic_error("Выход за пределы массива!"); }
+        } else { throw logic_error("Вектор не инициализирован!"); }
+    }
+    T maxEl(size_t endIdx) const { return maxEl(0, endIdx); }
+    T maxEl() const { return maxEl(0, _size - 1); }
+
+    size_t indexMinEl(size_t startIdx, size_t endIdx) const {
+        if (_isInit) {
+            if (endIdx < _size && endIdx > startIdx) {
+                size_t min_idx = startIdx;
+                for (size_t i = startIdx + 1; i <= endIdx; ++i) {
+                    if (_data[min_idx] > _data[i]) {
+                        min_idx = i;
+                    }
+                }
+
+                return min_idx;
+            }
+            else { throw logic_error("Выход за пределы массива!"); }
+        } else { throw logic_error("Вектор не инициализирован!"); }
+    }
+    T indexMinEl(size_t endIdx) const { return indexMinEl(0, endIdx); }
+    T indexMinEl() const { return indexMinEl(0, _size - 1); }
+
+    size_t indexMaxEl(size_t startIdx, size_t endIdx) const {
+        if (_isInit) {
+            if (endIdx < _size && endIdx > startIdx) {
+                size_t max_idx = startIdx;
+                for (size_t i = startIdx + 1; i <= endIdx; ++i) {
+                    if (_data[max_idx] < _data[i]) {
+                        max_idx = i;
+                    }
+                }
+
+                return max_idx;
+            }
+            else { throw logic_error("Выход за пределы массива!"); }
+        } else { throw logic_error("Вектор не инициализирован!"); }
+    }
+    T indexMaxEl(size_t endIdx) const { return indexMaxEl(0, endIdx); }
+    T indexMaxEl() const { return indexMaxEl(0, _size - 1); }
 
     T sum(size_t startIdx, size_t endIdx) const {
         if (_isInit) {
