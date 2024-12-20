@@ -81,7 +81,7 @@ public:
         if (_isInit) {
             if (endIdx < _size && endIdx > startIdx) {
                 T min_el = _data[startIdx];
-                for (size_t i = startIdx + 1; i <= endIdx; ++i)
+                for (size_t i = startIdx + 1; i < endIdx; ++i)
                 {
                     if (min_el > _data[i]) {
                         min_el = _data[i];
@@ -137,7 +137,7 @@ public:
         if (_isInit) {
             if (endIdx < _size && endIdx > startIdx) {
                 T max_el = _data[startIdx];
-                for (size_t i = startIdx + 1; i <= endIdx; ++i)
+                for (size_t i = startIdx + 1; i < endIdx; ++i)
                 {
                     if (max_el < _data[i]) {
                         max_el = _data[i];
@@ -193,7 +193,7 @@ public:
         if (_isInit) {
             if (endIdx < _size && endIdx > startIdx) {
                 size_t min_idx = startIdx;
-                for (size_t i = startIdx + 1; i <= endIdx; ++i) {
+                for (size_t i = startIdx + 1; i < endIdx; ++i) {
                     if (_data[min_idx] > _data[i]) {
                         min_idx = i;
                     }
@@ -248,7 +248,7 @@ public:
         if (_isInit) {
             if (endIdx < _size && endIdx > startIdx) {
                 size_t max_idx = startIdx;
-                for (size_t i = startIdx + 1; i <= endIdx; ++i) {
+                for (size_t i = startIdx + 1; i < endIdx; ++i) {
                     if (_data[max_idx] < _data[i]) {
                         max_idx = i;
                     }
@@ -303,7 +303,7 @@ public:
         if (_isInit) {
             if (endIdx < _size && endIdx > startIdx) {
                 T result = 0;
-                for (size_t i = startIdx; i <= endIdx; ++i)
+                for (size_t i = startIdx; i < endIdx; ++i)
                 {
                     result += _data[i];
                 }
@@ -324,7 +324,7 @@ public:
         lock_guard<mutex> lock(m);
         sum_result += sum_local;
     }
-    T sumParallel(size_t startIdx, size_t endIdx, unsigned threadsNum) {
+    T sumElParallel(size_t startIdx, size_t endIdx, unsigned threadsNum) {
         if (_isInit) {
             if (endIdx < _size && endIdx > startIdx) {
                 mutex m;
@@ -333,7 +333,7 @@ public:
                 size_t thChunkSize = (endIdx - startIdx + 1) / threadsNum;
                 for (size_t i = 0; i < threadsNum; ++i) {
                     size_t thStartIdx = startIdx + i * thChunkSize;
-                    size_t thEndIdx = thStartIdx + thChunkSize - 1;
+                    size_t thEndIdx = thStartIdx + thChunkSize;
                     if (i == threadsNum - 1) { thEndIdx = endIdx; }
 
                     threads.push_back(thread(sum_thread, this, thStartIdx, thEndIdx, ref(sum_result), ref(m)));
@@ -346,23 +346,23 @@ public:
             else { throw logic_error("Выход за пределы вектора!"); }
         } else { throw logic_error("Вектор не инициализирован!"); }
     }
-    T sumParallel(size_t endIdx, unsigned threadsNum) {
-        return sumParallel(0, endIdx, threadsNum); 
+    T sumElParallel(size_t endIdx, unsigned threadsNum) {
+        return sumElParallel(0, endIdx, threadsNum); 
     }
-    T sumParallel(unsigned threadsNum) {
-        return sumParallel(0, _size - 1, threadsNum);
+    T sumElParallel(unsigned threadsNum) {
+        return sumElParallel(0, _size - 1, threadsNum);
     }
 
     T meanEl(size_t startIdx, size_t endIdx) const {
         if (_isInit) {
             if (endIdx < _size && endIdx > startIdx) {
                 T sum = 0;
-                for (size_t i = startIdx; i <= endIdx; ++i)
+                for (size_t i = startIdx; i < endIdx; ++i)
                 {
                     sum += _data[i];
                 }
 
-                return sum / endIdx - startIdx;
+                return sum / (endIdx - startIdx) ;
             } else { throw logic_error("Выход за пределы вектора!"); }
         }
         else {
@@ -372,7 +372,7 @@ public:
     T meanEl(size_t endIdx) const { return meanEl(0, endIdx); }
     T meanEl() const { return meanEl(0, _size - 1); }
 
-    T meanParallel(size_t startIdx, size_t endIdx, unsigned threadsNum) {
+    T meanElParallel(size_t startIdx, size_t endIdx, unsigned threadsNum) {
         if (_isInit) {
             if (endIdx < _size && endIdx > startIdx) {
                 mutex m;
@@ -381,7 +381,7 @@ public:
                 size_t thChunkSize = (endIdx - startIdx + 1) / threadsNum;
                 for (size_t i = 0; i < threadsNum; ++i) {
                     size_t thStartIdx = startIdx + i * thChunkSize;
-                    size_t thEndIdx = thStartIdx + thChunkSize - 1;
+                    size_t thEndIdx = thStartIdx + thChunkSize;
                     if (i == threadsNum - 1) { thEndIdx = endIdx; }
 
                     threads.push_back(thread(sum_thread, this, thStartIdx, thEndIdx, ref(sum_result), ref(m)));
@@ -389,23 +389,23 @@ public:
 
                 for(auto& th : threads) { th.join(); }
 
-                return sum_result / _size;
+                return sum_result / (endIdx - startIdx);
             }
             else { throw logic_error("Выход за пределы вектора!"); }
         } else { throw logic_error("Вектор не инициализирован!"); }
     }
-    T meanParallel(size_t endIdx, unsigned threadsNum) {
-        return meanParallel(0, endIdx, threadsNum); 
+    T meanElParallel(size_t endIdx, unsigned threadsNum) {
+        return meanElParallel(0, endIdx, threadsNum); 
     }
-    T meanParallel(unsigned threadsNum) {
-        return meanParallel(0, _size - 1, threadsNum);
+    T meanElParallel(unsigned threadsNum) {
+        return meanElParallel(0, _size - 1, threadsNum);
     }
 
     T euclidNorm(size_t startIdx, size_t endIdx) const {
         if (_isInit) {
             if (endIdx < _size && endIdx > startIdx) {
                 T sum_sq = 0;
-                for (size_t i = startIdx; i <= endIdx; ++i)
+                for (size_t i = startIdx; i < endIdx; ++i)
                 {
                     sum_sq += _data[i] * _data[i];
                 }
@@ -421,7 +421,7 @@ public:
     T euclidNorm() const { return euclidNorm(0, _size - 1); }
 
     void euclidNorm_thread(size_t startIdx, size_t endIdx, T& euclidNorm_result, mutex& m) {
-        T euclidNorm_local = euclidNorm(startIdx, endIdx);
+        T euclidNorm_local = pow(euclidNorm(startIdx, endIdx), 2);
 
         lock_guard<mutex> lock(m);
         euclidNorm_result += euclidNorm_local;
@@ -435,7 +435,7 @@ public:
                 size_t thChunkSize = (endIdx - startIdx + 1) / threadsNum;
                 for (size_t i = 0; i < threadsNum; ++i) {
                     size_t thStartIdx = startIdx + i * thChunkSize;
-                    size_t thEndIdx = thStartIdx + thChunkSize - 1;
+                    size_t thEndIdx = thStartIdx + thChunkSize;
                     if (i == threadsNum - 1) { thEndIdx = endIdx; }
 
                     threads.push_back(thread(euclidNorm_thread, this, thStartIdx, thEndIdx, ref(euclidNorm_result), ref(m)));
@@ -443,7 +443,7 @@ public:
 
                 for(auto& th : threads) { th.join(); }
 
-                return euclidNorm_result;
+                return sqrt(euclidNorm_result);
             }
             else { throw logic_error("Выход за пределы вектора!"); }
         } else { throw logic_error("Вектор не инициализирован!"); }
@@ -455,11 +455,11 @@ public:
         return euclidNormParallel(0, _size - 1, threadsNum);
     }
 
-    T manhattanNorm(size_t startIdx, size_t endIdx) const {
+    T mnhtnNorm(size_t startIdx, size_t endIdx) const {
         if (_isInit) {
             if (endIdx < _size && endIdx > startIdx) {
                 T result = 0;
-                for (size_t i = startIdx; i <= endIdx; ++i)
+                for (size_t i = startIdx; i < endIdx; ++i)
                 {
                     result += abs(_data[i]);
                 }
@@ -471,8 +471,43 @@ public:
             throw logic_error("Вектор не инициализирован!");
         }
     }
-    T manhattanNorm(size_t endIdx) const { return manhattanNorm(0, endIdx); }
-    T manhattanNorm() const { return manhattanNorm(0, _size - 1); }
+    T mnhtnNorm(size_t endIdx) const { return mnhtnNorm(0, endIdx); }
+    T mnhtnNorm() const { return mnhtnNorm(0, _size - 1); }
+
+    void mnhtnNorm_thread(size_t startIdx, size_t endIdx, T& mnhtnNorm_result, mutex& m) {
+        T mnhtnNorm_local = mnhtnNorm(startIdx, endIdx);
+
+        lock_guard<mutex> lock(m);
+        mnhtnNorm_result += mnhtnNorm_local;
+    }
+    T mnhtnNormParallel(size_t startIdx, size_t endIdx, unsigned threadsNum) {
+        if (_isInit) {
+            if (endIdx < _size && endIdx > startIdx) {
+                mutex m;
+                T mnhtnNorm_result = 0;
+                vector<thread> threads;
+                size_t thChunkSize = (endIdx - startIdx + 1) / threadsNum;
+                for (size_t i = 0; i < threadsNum; ++i) {
+                    size_t thStartIdx = startIdx + i * thChunkSize;
+                    size_t thEndIdx = thStartIdx + thChunkSize;
+                    if (i == threadsNum - 1) { thEndIdx = endIdx; }
+
+                    threads.push_back(thread(mnhtnNorm_thread, this, thStartIdx, thEndIdx, ref(mnhtnNorm_result), ref(m)));
+                }
+
+                for(auto& th : threads) { th.join(); }
+
+                return mnhtnNorm_result;
+            }
+            else { throw logic_error("Выход за пределы вектора!"); }
+        } else { throw logic_error("Вектор не инициализирован!"); }
+    }
+    T mnhtnNormParallel(size_t endIdx, unsigned threadsNum) {
+        return mnhtnNormParallel(0, endIdx, threadsNum); 
+    }
+    T mnhtnNormParallel(unsigned threadsNum) {
+        return mnhtnNormParallel(0, _size - 1, threadsNum);
+    }
 
     Vector operator*(const Vector& other_v) const {
         if (_isInit && other_v._isInit) {
@@ -491,7 +526,7 @@ public:
     void print(size_t startIdx, size_t endIdx) const {
         if (_isInit) {
             if (endIdx < _size && endIdx > startIdx) {
-                for (size_t i = startIdx; i <= endIdx; ++i)
+                for (size_t i = startIdx; i < endIdx; ++i)
                 {
                     cout << fixed << setprecision(5) << _data[i] << " ";
                 }
@@ -513,15 +548,12 @@ int main() {
     size_t size = 100'000'000;
     Vector vec1(size);
     vec1.fillRandom(-10.5, 10.5);
-    // vec1.print(10);
-    
-    auto start = omp_get_wtime();
-    cout << vec1.euclidNorm() << endl;
-    auto end = omp_get_wtime();
-    cout  << (end - start) << endl;
+    vec1.print(10);
 
-    start = omp_get_wtime();
-    cout << vec1.euclidNormParallel(4) << endl;
-    end = omp_get_wtime();
-    cout  << (end - start) << endl;
+    cout << vec1.maxEl(10) << " | " << vec1.maxElParallel(10, 4) << endl;
+    cout << vec1.minEl(10) << " | " << vec1.minElParallel(10, 4) << endl;
+    cout << vec1.sumEl(10) << " | " << vec1.sumElParallel(10, 4) << endl;
+    cout << vec1.meanEl(10) << " | " << vec1.meanElParallel(10, 4) << endl;
+    cout << vec1.euclidNorm(10) << " | " << vec1.euclidNormParallel(10, 4) << endl;
+    cout << vec1.mnhtnNorm(10) << " | " << vec1.mnhtnNormParallel(10, 4) << endl;
 }
