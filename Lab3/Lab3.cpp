@@ -421,15 +421,15 @@ public:
     T sumEl(size_t startIdx, size_t endIdx) const {
         if (_isInit) {
             if (endIdx <= _size && endIdx > startIdx) {
-                T result = 0;
+                T result = T(0);
                 for (size_t i = startIdx; i < endIdx; ++i) {
                     result += _data[i];
                 }
 
                 return result;
-            } else { throw logic_error("Выход за пределы вектора!"); }
-        }
-        else {
+            }
+            else { throw logic_error("Выход за пределы вектора!"); }
+        } else {
             throw logic_error("Вектор не инициализирован!");
         }
     }
@@ -446,7 +446,7 @@ public:
         if (_isInit) {
             if (endIdx <= _size && endIdx > startIdx) {
                 mutex m;
-                T sum_result = 0;
+                T sum_result = T(0);
                 vector<thread> threads;
                 size_t thChunkSize = (endIdx - startIdx) / threadsNum;
                 for (size_t i = 0; i < threadsNum; ++i) {
@@ -474,7 +474,7 @@ public:
     T sumElOMP(size_t startIdx, size_t endIdx, unsigned threadsNum) const {
         if (_isInit) {
             if (endIdx <= _size && endIdx > startIdx) {
-                T result = 0;
+                T result = T(0);
                 #pragma omp parallel for num_threads(threadsNum) reduction(+:result)
                 for (size_t i = startIdx; i < endIdx; ++i) {
                     result += _data[i];
@@ -494,16 +494,16 @@ public:
         return sumElOMP(0, _size, threadsNum);
     }
 
-    T meanEl(size_t startIdx, size_t endIdx) const {
-        T sum = sumEl(startIdx, endIdx);
-        T result = sum / (endIdx - startIdx);
+    long double meanEl(size_t startIdx, size_t endIdx) const {
+        long double sum = sumEl(startIdx, endIdx);
+        long double result = sum / static_cast<long long int>(endIdx - startIdx);
 
         return result;
     }
-    T meanEl(size_t endIdx) const { return meanEl(0, endIdx); }
-    T meanEl() const { return meanEl(0, _size); }
+    long double meanEl(size_t endIdx) const { return meanEl(0, endIdx); }
+    long double meanEl() const { return meanEl(0, _size); }
 
-    T meanElParallel(size_t startIdx, size_t endIdx, unsigned threadsNum) {
+    long double meanElParallel(size_t startIdx, size_t endIdx, unsigned threadsNum) {
         if (_isInit) {
             if (endIdx <= _size && endIdx > startIdx) {
                 mutex m;
@@ -520,20 +520,20 @@ public:
 
                 for(auto& th : threads) { th.join(); }
                 
-                T result = sum_result / (endIdx - startIdx);
+                long double result = static_cast<long double>(sum_result) / static_cast<long long int>(endIdx - startIdx);
                 return result;
             }
             else { throw logic_error("Выход за пределы вектора!"); }
         } else { throw logic_error("Вектор не инициализирован!"); }
     }
-    T meanElParallel(size_t endIdx, unsigned threadsNum) {
+    long double meanElParallel(size_t endIdx, unsigned threadsNum) {
         return meanElParallel(0, endIdx, threadsNum); 
     }
-    T meanElParallel(unsigned threadsNum) {
+    long double meanElParallel(unsigned threadsNum) {
         return meanElParallel(0, _size, threadsNum);
     }
 
-    T meanElOMP(size_t startIdx, size_t endIdx, unsigned threadsNum) const {
+    long double meanElOMP(size_t startIdx, size_t endIdx, unsigned threadsNum) const {
         if (_isInit) {
             if (endIdx <= _size && endIdx > startIdx) {
                 T sum = 0;
@@ -541,7 +541,7 @@ public:
                 for (size_t i = startIdx; i < endIdx; ++i) {
                     sum += _data[i];
                 }
-                T result = sum / (endIdx - startIdx);
+                long double result = static_cast<long double>(sum) / static_cast<long long int>(endIdx - startIdx);
 
                 return result;
             } else { throw logic_error("Выход за пределы вектора!"); }
@@ -550,21 +550,21 @@ public:
             throw logic_error("Вектор не инициализирован!");
         }
     }
-    T meanElOMP(size_t endIdx, unsigned threadsNum) const {
+    long double meanElOMP(size_t endIdx, unsigned threadsNum) const {
         return meanElOMP(0, endIdx, threadsNum);
     }
-    T meanElOMP(unsigned threadsNum) const {
+    long double meanElOMP(unsigned threadsNum) const {
         return meanElOMP(0, _size, threadsNum);
     }
 
-    T euclidNorm(size_t startIdx, size_t endIdx) const {
+    long double euclidNorm(size_t startIdx, size_t endIdx) const {
         if (_isInit) {
             if (endIdx <= _size && endIdx > startIdx) {
                 T sum_sq = 0;
                 for (size_t i = startIdx; i < endIdx; ++i) {
                     sum_sq += (_data[i] * _data[i]);
                 }
-                T result = sqrtl(sum_sq);
+                long double result = sqrtl(static_cast<long double>(sum_sq));
 
                 return result;
             } else { throw logic_error("Выход за пределы вектора!"); }
@@ -573,8 +573,8 @@ public:
             throw logic_error("Вектор не инициализирован!");
         }
     }
-    T euclidNorm(size_t endIdx) const { return euclidNorm(0, endIdx); }
-    T euclidNorm() const { return euclidNorm(0, _size); }
+    long double euclidNorm(size_t endIdx) const { return euclidNorm(0, endIdx); }
+    long double euclidNorm() const { return euclidNorm(0, _size); }
 
     void euclidNorm_thread(size_t startIdx, size_t endIdx, T& sum_sq, mutex& m) {
         T sum_sq_local = 0;
@@ -585,7 +585,7 @@ public:
         lock_guard<mutex> lock(m);
         sum_sq += sum_sq_local;
     }
-    T euclidNormParallel(size_t startIdx, size_t endIdx, unsigned threadsNum) {
+    long double euclidNormParallel(size_t startIdx, size_t endIdx, unsigned threadsNum) {
         if (_isInit) {
             if (endIdx <= _size && endIdx > startIdx) {
                 mutex m;
@@ -602,20 +602,20 @@ public:
 
                 for(auto& th : threads) { th.join(); }
 
-                T result = sqrtl(sum_sq);
+                long double result = sqrtl(static_cast<long double>(sum_sq));
                 return result;
             }
             else { throw logic_error("Выход за пределы вектора!"); }
         } else { throw logic_error("Вектор не инициализирован!"); }
     }
-    T euclidNormParallel(size_t endIdx, unsigned threadsNum) {
+    long double euclidNormParallel(size_t endIdx, unsigned threadsNum) {
         return euclidNormParallel(0, endIdx, threadsNum); 
     }
-    T euclidNormParallel(unsigned threadsNum) {
+    long double euclidNormParallel(unsigned threadsNum) {
         return euclidNormParallel(0, _size, threadsNum);
     }
 
-    T euclidNormOMP(size_t startIdx, size_t endIdx, unsigned threadsNum) const {
+    long double euclidNormOMP(size_t startIdx, size_t endIdx, unsigned threadsNum) const {
         if (_isInit) {
             if (endIdx <= _size && endIdx > startIdx) {
                 T sum_sq = 0;
@@ -624,7 +624,7 @@ public:
                     sum_sq += (_data[i] * _data[i]);
                 }
 
-                T result = sqrtl(sum_sq);
+                long double result = sqrtl(sum_sq);
                 return result;
             } else { throw logic_error("Выход за пределы вектора!"); }
         }
@@ -632,10 +632,10 @@ public:
             throw logic_error("Вектор не инициализирован!");
         }
     }
-    T euclidNormOMP(size_t endIdx, unsigned threadsNum) const {
+    long double euclidNormOMP(size_t endIdx, unsigned threadsNum) const {
         return euclidNormOMP(0, endIdx, threadsNum);
     }
-    T euclidNormOMP(unsigned threadsNum) const {
+    long double euclidNormOMP(unsigned threadsNum) const {
         return euclidNormOMP(0, _size, threadsNum);
     }
 
@@ -755,21 +755,21 @@ int main() {
     vec1.fillRandom(-100'000, 100'000);
     vec1.print(10);
 
-    cout << setw(15) << "Max: " << setw(25) << vec1.maxEl(10) << " | " << setw(25) 
-            << vec1.maxElParallel(10, 4) << " | " << vec1.maxElOMP(10, 4) << endl;
-    cout << setw(15) << "Min: " << setw(25) << vec1.minEl(10) << " | " << setw(25) 
-            << vec1.minElParallel(10, 4) << " | " << vec1.minElOMP(10, 4) << endl;
-    cout << setw(15) << "idxMax: " << setw(25) << vec1[vec1.indexMaxEl(10)] << " | " << setw(25) 
-            << vec1[vec1.indexMaxElParallel(10, 4)] << " | " << vec1[vec1.indexMaxElOMP(10, 4)] << endl;
-    cout << setw(15) << "idxMin: " << setw(25) << vec1[vec1.indexMinEl(10)] << " | " << setw(25) 
-            << vec1[vec1.indexMinElParallel(10, 4)] << " | " << vec1[vec1.indexMinElOMP(10, 4)] << endl;
-    cout << setw(15) << "Sum: " << setw(25) << vec1.sumEl(10) << " | " << setw(25) 
-            << vec1.sumElParallel(10, 4) << " | " << vec1.sumElOMP(10, 4) << endl;
-    cout << setw(15) << "Mean: " << setw(25) << vec1.meanEl(10) << " | " << setw(25) 
-            << vec1.meanElParallel(10, 4) << " | " << vec1.meanElOMP(10, 4) << endl;
-    cout << setw(15) << "EuclidNorm: " << setw(25) << vec1.euclidNorm(10) << " | " << setw(25) 
-            << vec1.euclidNormParallel(10, 4) << " | " << vec1.euclidNormOMP(10, 4) << endl;
-    cout << setw(15) << "MnhtnNorm: " << setw(25) << vec1.mnhtnNorm(10) << " | " << setw(25) 
-            << vec1.mnhtnNormParallel(10, 4) << " | " << vec1.mnhtnNormOMP(10, 4) << endl;
+    cout << setw(15) << "Max: " << setw(25) << vec1.maxEl() << " | " << setw(25) 
+            << vec1.maxElParallel(4) << " | " << vec1.maxElOMP(4) << endl;
+    cout << setw(15) << "Min: " << setw(25) << vec1.minEl() << " | " << setw(25) 
+            << vec1.minElParallel(4) << " | " << vec1.minElOMP(4) << endl;
+    cout << setw(15) << "idxMax: " << setw(25) << vec1[vec1.indexMaxEl()] << " | " << setw(25) 
+            << vec1[vec1.indexMaxElParallel(4)] << " | " << vec1[vec1.indexMaxElOMP(4)] << endl;
+    cout << setw(15) << "idxMin: " << setw(25) << vec1[vec1.indexMinEl()] << " | " << setw(25) 
+            << vec1[vec1.indexMinElParallel(4)] << " | " << vec1[vec1.indexMinElOMP(4)] << endl;
+    cout << setw(15) << "Sum: " << setw(25) << vec1.sumEl() << " | " << setw(25) 
+            << vec1.sumElParallel(4) << " | " << vec1.sumElOMP(4) << endl;
+    cout << setw(15) << "Mean: " << setw(25) << vec1.meanEl() << " | " << setw(25) 
+            << vec1.meanElParallel(4) << " | " << vec1.meanElOMP(4) << endl;
+    cout << setw(15) << "EuclidNorm: " << setw(25) << vec1.euclidNorm() << " | " << setw(25) 
+            << vec1.euclidNormParallel(4) << " | " << vec1.euclidNormOMP(4) << endl;
+    cout << setw(15) << "MnhtnNorm: " << setw(25) << vec1.mnhtnNorm() << " | " << setw(25) 
+            << vec1.mnhtnNormParallel(4) << " | " << vec1.mnhtnNormOMP(4) << endl;
 
 }
